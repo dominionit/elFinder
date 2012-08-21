@@ -3133,14 +3133,14 @@ abstract class elFinderVolumeDriver {
 	protected function gpImage($image, $filename, $destformat, $mime ){
 
 		if ($destformat == 'jpg' || ($destformat == null && $mime == 'image/jpeg')) {
-			return imagejpeg($image, $path, 100);
+			return imagejpeg($image, $filename, 100);
 		}
 
 		if ($destformat == 'gif' || ($destformat == null && $mime == 'image/gif')) {
-			return imagegif($image, $path, 7);
+			return imagegif($image, $filename, 7);
 		}
 
-		return imagepng($image, $path, 7);
+		return imagepng($image, $filename, 7);
 	}
 
 	/**
@@ -3151,15 +3151,13 @@ abstract class elFinderVolumeDriver {
 	 */
 	protected function gpImageBackground($image, $bgcolor){
 
-		if ($bgcolor == 'transparent') {
-			list($r, $g, $b) = array(0, 0, 255);
-		} else {
-			list($r, $g, $b) = sscanf($bgcolor, "#%02x%02x%02x");
-		}
+		if( $bgcolor == 'transparent' ){
+			imagesavealpha($image,true);
+			$bgcolor1 = imagecolorallocatealpha($image, 255, 255, 255, 127);
 
-		$bgcolor1 = imagecolorallocate($image, $r, $g, $b);
-		if ($bgcolor == 'transparent') {
-			$bgcolor1 = imagecolortransparent($image, $bgcolor1);
+		}else{
+			list($r, $g, $b) = sscanf($bgcolor, "#%02x%02x%02x");
+			$bgcolor1 = imagecolorallocate($image, $r, $g, $b);
 		}
 
 		imagefill($image, 0, 0, $bgcolor1);
