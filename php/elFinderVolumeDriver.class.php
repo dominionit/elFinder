@@ -2819,15 +2819,7 @@ abstract class elFinderVolumeDriver {
 				break;
 
 			case 'gd':
-				if ($s['mime'] == 'image/jpeg') {
-					$img = imagecreatefromjpeg($path);
-				} elseif ($s['mime'] == 'image/png') {
-					$img = imagecreatefrompng($path);
-				} elseif ($s['mime'] == 'image/gif') {
-					$img = imagecreatefromgif($path);
-				} elseif ($s['mime'] == 'image/xbm') {
-					$img = imagecreatefromxbm($path);
-				}
+				$img = self::gdImageCreate($path,$s['mime']);
 
 				if ($img &&  false != ($tmp = imagecreatetruecolor($size_w, $size_h))) {
 
@@ -2851,13 +2843,7 @@ abstract class elFinderVolumeDriver {
 							return false;
 					}
 
-					if ($destformat == 'jpg'  || ($destformat == null && $s['mime'] == 'image/jpeg')) {
-						$result = imagejpeg($tmp, $path, 100);
-					} else if ($destformat == 'gif' || ($destformat == null && $s['mime'] == 'image/gif')) {
-						$result = imagegif($tmp, $path, 7);
-					} else {
-						$result = imagepng($tmp, $path, 7);
-					}
+					$result = self::gpImage($tmp, $path, $destformat, $s['mime']);
 
 					imagedestroy($img);
 					imagedestroy($tmp);
@@ -2910,15 +2896,7 @@ abstract class elFinderVolumeDriver {
 				break;
 
 			case 'gd':
-				if ($s['mime'] == 'image/jpeg') {
-					$img = imagecreatefromjpeg($path);
-				} elseif ($s['mime'] == 'image/png') {
-					$img = imagecreatefrompng($path);
-				} elseif ($s['mime'] == 'image/gif') {
-					$img = imagecreatefromgif($path);
-				} elseif ($s['mime'] == 'image/xbm') {
-					$img = imagecreatefromxbm($path);
-				}
+				$img = self::gdImageCreate($path,$s['mime']);
 
 				if ($img &&  false != ($tmp = imagecreatetruecolor($width, $height))) {
 
@@ -2950,13 +2928,7 @@ abstract class elFinderVolumeDriver {
 						return false;
 					}
 
-					if ($destformat == 'jpg'  || ($destformat == null && $s['mime'] == 'image/jpeg')) {
-						$result = imagejpeg($tmp, $path, 100);
-					} else if ($destformat == 'gif' || ($destformat == null && $s['mime'] == 'image/gif')) {
-						$result = imagegif($tmp, $path, 7);
-					} else {
-						$result = imagepng($tmp, $path, 7);
-					}
+					$result = self::gpImage($tmp, $path, $destformat, $s['mime']);
 
 					imagedestroy($img);
 					imagedestroy($tmp);
@@ -3014,15 +2986,7 @@ abstract class elFinderVolumeDriver {
 				break;
 
 			case 'gd':
-				if ($s['mime'] == 'image/jpeg') {
-					$img = imagecreatefromjpeg($path);
-				} elseif ($s['mime'] == 'image/png') {
-					$img = imagecreatefrompng($path);
-				} elseif ($s['mime'] == 'image/gif') {
-					$img = imagecreatefromgif($path);
-				} elseif ($s['mime'] == 'image/xbm') {
-					$img = imagecreatefromxbm($path);
-				}
+				$img = self::gdImageCreate($path,$s['mime']);
 
 				if ($img &&  false != ($tmp = imagecreatetruecolor($width, $height))) {
 
@@ -3044,13 +3008,7 @@ abstract class elFinderVolumeDriver {
 						return false;
 					}
 
-					if ($destformat == 'jpg'  || ($destformat == null && $s['mime'] == 'image/jpeg')) {
-						$result = imagejpeg($tmp, $path, 100);
-					} else if ($destformat == 'gif' || ($destformat == null && $s['mime'] == 'image/gif')) {
-						$result = imagegif($tmp, $path, 7);
-					} else {
-						$result = imagepng($tmp, $path, 7);
-					}
+					$result = self::gpImage($tmp, $path, $destformat, $s['mime']);
 
 					imagedestroy($img);
 					imagedestroy($tmp);
@@ -3096,28 +3054,14 @@ abstract class elFinderVolumeDriver {
 				break;
 
 			case 'gd':
-				if ($s['mime'] == 'image/jpeg') {
-					$img = imagecreatefromjpeg($path);
-				} elseif ($s['mime'] == 'image/png') {
-					$img = imagecreatefrompng($path);
-				} elseif ($s['mime'] == 'image/gif') {
-					$img = imagecreatefromgif($path);
-				} elseif ($s['mime'] == 'image/xbm') {
-					$img = imagecreatefromxbm($path);
-				}
+				$img = self::gdImageCreate($path,$s['mime']);
 
 				$degree = 360 - $degree;
 				list($r, $g, $b) = sscanf($bgcolor, "#%02x%02x%02x");
 				$bgcolor = imagecolorallocate($img, $r, $g, $b);
 				$tmp = imageRotate($img, $degree, (int)$bgcolor);
 
-				if ($destformat == 'jpg' || ($destformat == null && $s['mime'] == 'image/jpeg')) {
-					$result = imagejpeg($tmp, $path, 100);
-				} else if ($destformat == 'gif' || ($destformat == null && $s['mime'] == 'image/gif')) {
-					$result = imagegif($tmp, $path, 7);
-				} else {
-					$result = imagepng($tmp, $path, 7);
-				}
+				$result = self::gpImage($tmp, $path, $destformat, $s['mime']);
 
 				imageDestroy($img);
 				imageDestroy($tmp);
@@ -3191,6 +3135,52 @@ abstract class elFinderVolumeDriver {
 			file_exists($tmb) && @unlink($tmb);
 			clearstatcache();
 		}
+	}
+
+
+	/**
+	 * Create an gd image according to the specified mime type
+	 *
+	 * @param string $path image file
+	 * @param string $mime
+	 * @return gd image resource identifier
+	 */
+	protected function gdImageCreate($path,$mime){
+		switch($mime){
+			case 'image/jpeg':
+			return imagecreatefromjpeg($path);
+
+			case 'image/png':
+			return imagecreatefrompng($path);
+
+			case 'image/gif':
+			return imagecreatefromgif($path);
+
+			case 'image/xbm':
+			return imagecreatefromxbm($path);
+		}
+		return false;
+	}
+
+	/**
+	 * Output gd image to file
+	 *
+	 * @param resource $image gd image resource
+	 * @param string $filename The path to save the file to.
+	 * @param string $destformat The Image type to use for $filename
+	 * @param string $mime The original image mime type
+	 */
+	protected function gpImage($image, $filename, $destformat, $mime ){
+
+		if ($destformat == 'jpg' || ($destformat == null && $mime == 'image/jpeg')) {
+			return imagejpeg($image, $path, 100);
+		}
+
+		if ($destformat == 'gif' || ($destformat == null && $mime == 'image/gif')) {
+			return imagegif($image, $path, 7);
+		}
+
+		return imagepng($image, $path, 7);
 	}
 
 	/*********************** misc *************************/
