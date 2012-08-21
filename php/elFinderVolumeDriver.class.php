@@ -2823,24 +2823,10 @@ abstract class elFinderVolumeDriver {
 
 				if ($img &&  false != ($tmp = imagecreatetruecolor($size_w, $size_h))) {
 
-					$bgcolor = $this->options['tmbBgColor'];
-
-					if ($bgcolor == 'transparent') {
-						list($r, $g, $b) = array(0, 0, 255);
-					} else {
-						list($r, $g, $b) = sscanf($bgcolor, "#%02x%02x%02x");
-					}
-
-					$bgcolor1 = imagecolorallocate($tmp, $r, $g, $b);
-
-					if ($bgcolor == 'transparent') {
-						$bgcolor1 = imagecolortransparent($tmp, $bgcolor1);
-					}
-
-					imagefill($tmp, 0, 0, $bgcolor1);
+					self::gpImageBackground($tmp,$this->options['tmbBgColor']);
 
 					if (!imagecopyresampled($tmp, $img, 0, 0, 0, 0, $size_w, $size_h, $s[0], $s[1])) {
-							return false;
+						return false;
 					}
 
 					$result = self::gpImage($tmp, $path, $destformat, $s['mime']);
@@ -2900,21 +2886,7 @@ abstract class elFinderVolumeDriver {
 
 				if ($img &&  false != ($tmp = imagecreatetruecolor($width, $height))) {
 
-					$bgcolor = $this->options['tmbBgColor'];
-
-					if ($bgcolor == 'transparent') {
-						list($r, $g, $b) = array(0, 0, 255);
-					} else {
-						list($r, $g, $b) = sscanf($bgcolor, "#%02x%02x%02x");
-					}
-
-					$bgcolor1 = imagecolorallocate($tmp, $r, $g, $b);
-
-					if ($bgcolor == 'transparent') {
-						$bgcolor1 = imagecolortransparent($tmp, $bgcolor1);
-					}
-
-					imagefill($tmp, 0, 0, $bgcolor1);
+					self::gpImageBackground($tmp,$this->options['tmbBgColor']);
 
 					$size_w = $width;
 					$size_h = $height;
@@ -2990,19 +2962,7 @@ abstract class elFinderVolumeDriver {
 
 				if ($img &&  false != ($tmp = imagecreatetruecolor($width, $height))) {
 
-					if ($bgcolor == 'transparent') {
-						list($r, $g, $b) = array(0, 0, 255);
-					} else {
-						list($r, $g, $b) = sscanf($bgcolor, "#%02x%02x%02x");
-					}
-
-					$bgcolor1 = imagecolorallocate($tmp, $r, $g, $b);
-
-					if ($bgcolor == 'transparent') {
-						$bgcolor1 = imagecolortransparent($tmp, $bgcolor1);
-					}
-
-					imagefill($tmp, 0, 0, $bgcolor1);
+					self::gpImageBackground($tmp,$bgcolor);
 
 					if (!imagecopy($tmp, $img, $x, $y, 0, 0, $s[0], $s[1])) {
 						return false;
@@ -3182,6 +3142,29 @@ abstract class elFinderVolumeDriver {
 
 		return imagepng($image, $path, 7);
 	}
+
+	/**
+	 * Assign the proper background to a gd image
+	 *
+	 * @param resource $image gd image resource
+	 * @param string $bgcolor background color in #rrggbb format
+	 */
+	protected function gpImageBackground($image, $bgcolor){
+
+		if ($bgcolor == 'transparent') {
+			list($r, $g, $b) = array(0, 0, 255);
+		} else {
+			list($r, $g, $b) = sscanf($bgcolor, "#%02x%02x%02x");
+		}
+
+		$bgcolor1 = imagecolorallocate($image, $r, $g, $b);
+		if ($bgcolor == 'transparent') {
+			$bgcolor1 = imagecolortransparent($image, $bgcolor1);
+		}
+
+		imagefill($image, 0, 0, $bgcolor1);
+	}
+
 
 	/*********************** misc *************************/
 
