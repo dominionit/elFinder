@@ -677,7 +677,8 @@ abstract class elFinderVolumeDriver {
 		
 		if (($type == 'finfo' || $type == 'auto') 
 		&& class_exists('finfo')
-		&& preg_match($regexp, array_shift(($tmp = explode(';', @finfo_file(finfo_open(FILEINFO_MIME), __FILE__)))))) {
+		&& $tmp = explode(';', @finfo_file(finfo_open(FILEINFO_MIME), __FILE__))
+		&& preg_match($regexp, array_shift($tmp)) ){
 			$type = 'finfo';
 			$this->finfo = finfo_open(FILEINFO_MIME);
 		} elseif (($type == 'mime_content_type' || $type == 'auto') 
