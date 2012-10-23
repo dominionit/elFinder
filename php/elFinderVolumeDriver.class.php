@@ -497,6 +497,13 @@ abstract class elFinderVolumeDriver {
 	 **/
 	protected function configure() {
 		// set thumbnails path
+         //try and fix WEIRD issue when entereing configure function then tmbPath and path is combined as per issue 
+		//https://github.com/Studio-42/elFinder/issues/417
+		//Cant see that this is correct, but if somehow somebody has the same scenario with the values, this seems to fix it.
+		if (strpos($this->options['tmbPath'],substr($this->options['path'],0,strlen($this->options['path'])-1).'\\') !== FALSE) {  //fix weird value combine bug
+		    $this->options['tmbPath'] = substr($this->options['tmbPath'],strlen($this->options['path'].'\\')-1,strlen($this->options['tmbPath'])); 
+     	}
+		
 		$path = $this->options['tmbPath'];
 		if ($path) {
 			if (!file_exists($path)) {
